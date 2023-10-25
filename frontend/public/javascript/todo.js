@@ -17,7 +17,6 @@ export default {
 
     methods: {
         reload() {
-            console.log('reload')
 
             this.inputStyle = []
             this.flagArr = []
@@ -77,15 +76,33 @@ export default {
         on(arr) {
             this.checked = true
 
-            const stateTure = arr.filter(data => data.state == 1)
-            const stateFalse = arr.filter(data => data.state == 0)
-            const concatArr = stateFalse.concat(stateTure)
+            this.arr = arr
 
-            this.arr = concatArr
+            //섞이는 arr에 맞춰 flag, inputStyle, disabled도 같이 맞춰줄려고 병합한 다음 따로 정렬하고 따로 추출
+            //병합
+            const newArr = this.arr
+                .map((item, index) => ({
+                    item,
+                    flag: this.flagArr[index],
+                    inputStyle: this.inputStyle[index],
+                    disabled: this.disabled[index]
+                }))
+
+            //정령
+            newArr.sort((a, b) => {
+                if (a.item.state == true && b.item.state == false) return 1
+                else if (a.item.state == false && b.item.state == true) return -1
+                else return 0
+            })
+
+            //따로 추출
+            this.arr = newArr.map((item) => item.item)
+            this.flagArr = newArr.map((item) => item.flag)
+            this.inputStyle = newArr.map((item) => item.inputStyle)
+            this.disabled = newArr.map((item) => item.disabled)
         },
         off(arr) {
             this.checked = false
-
             this.arr = arr
         },
         addItem() {
@@ -107,7 +124,6 @@ export default {
             })
         },
         stateEdit(id, state) {
-            console.log(id, state)
 
             const index = this.arr.findIndex((item) => item.id == id)
 
@@ -184,7 +200,7 @@ export default {
                 console.error(`err : ${err}`)
             })
         },
-        switchChange(){
+        switchChange() {
             localStorage.setItem("onoff", this.checked)
             this.reload()
         }
