@@ -8,7 +8,7 @@
 
     <ul class="list" id="list" v-if="listPage">
       <li v-for="i in arr" :key="i.id">
-        <input type="text" v-model="i.content" disabled class="input-text">
+        <input type="text" v-model="i.content" disabled class="input-text" :style="getCheckStyle(i.id)">
         <div class="icon-box">
           <input type="checkbox" :id="'cb' + i.id" v-model="i.state" v-on:change="stateEdit(i.id, i.state)">
           <label :for="'cb' + i.id"></label>
