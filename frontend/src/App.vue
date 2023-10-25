@@ -8,18 +8,18 @@
 
     <ul class="list" id="list" v-if="listPage">
       <li v-for="i in arr" :key="i.id">
-        <input type="text" v-model="i.content" disabled class="input-text" :style="getCheckStyle(i.id)">
+        <input type="text" v-model="i.content" :disabled="getDisabled(i.id)" class="input-text" :style="getCheckStyle(i.id)">
         <div class="icon-box">
           <input type="checkbox" :id="'cb' + i.id" v-model="i.state" v-on:change="stateEdit(i.id, i.state)">
           <label :for="'cb' + i.id"></label>
-          <font-awesome-icon :icon="['fas', 'pen']" class="icon"/>
-          <font-awesome-icon icon="fa-solid fa-trash" class="icon"/>
+          <font-awesome-icon :icon="['fas', 'pen']" class="icon" v-on:click="contentEdit(i.id, i.content)"/>
+          <font-awesome-icon icon="fa-solid fa-trash" class="icon" v-on:click="remove(i.id)"/>
         </div>
       </li>
 
       <div class="switch-container">
         <p>Move done items at the end?</p>
-        <input type="checkbox" id="switch" role="switch" v-model="checked">
+        <input type="checkbox" id="switch" role="switch" v-model="checked" v-on:change="switchChange()">
         <label for="switch"></label>
       </div>
     </ul>

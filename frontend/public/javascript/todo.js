@@ -9,7 +9,9 @@ export default {
             inputValue: ref(''),
             arr: [],
             checked: false,
-            inputStyle : [],
+            inputStyle: [],
+            disabled: [],
+            flagArr: [],
         }
     },
 
@@ -17,7 +19,9 @@ export default {
         reload() {
             console.log('reload')
 
-            const inputStyle = []
+            this.inputStyle = []
+            this.flagArr = []
+            this.disabled = []
 
             fetch('http://localhost:3000/api/list', {
                 method: "GET"
@@ -34,30 +38,30 @@ export default {
                     this.emptyPage = false
                     this.listPage = true
 
-                    result.map((data) => {
-                        if(data.state == 1){
-                            data.state = true
-                        }else{
-                            data.state = false
-                        }
-                    })
-                    
+                    //database에는 state가 int여서 bool로 바꾸는 과정
+                    result.map((data) => data.state = Boolean(data.state))
+
+
+                    //database의 데이터 수 만큼 스타일, flag, disabled 배열 만들기
                     result.forEach(data => {
-                        
-                        if(data.state){
-                            inputStyle.push({
-                                textDecoration : 'line-through',
-                                opacity : 0.4
+
+                        this.flagArr.push(false)
+                        this.disabled.push(true)
+
+                        if (data.state) {
+                            this.inputStyle.push({
+                                textDecoration: 'line-through',
+                                opacity: 0.4,
+                                border: 'none'
                             })
-                        }else{
-                            inputStyle.push({
-                                textDecoration : 'none',
-                                opacity : 1
+                        } else {
+                            this.inputStyle.push({
+                                textDecoration: 'none',
+                                opacity: 1,
+                                border: 'none'
                             })
                         }
                     });
-
-                    this.inputStyle = inputStyle
 
                     // 스위치 on상태 일때 판단
                     if (localStorage.getItem('onoff') == 'true') {
@@ -102,24 +106,87 @@ export default {
                 console.error(`err : ${err}`)
             })
         },
-        stateEdit(id, state){
+        stateEdit(id, state) {
             console.log(id, state)
 
             const index = this.arr.findIndex((item) => item.id == id)
-            
+
             this.inputStyle[index].textDecoration = state ? 'line-through' : 'none'
             this.inputStyle[index].opacity = state ? 0.4 : 1
+
+            fetch('http://localhost:3000/api/list/state/edit', {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "id": id,
+                    "state": state
+                })
+            }).then(() => {
+                //스위치 온 오프 상태일때 체크박스 체크를 하면 바로 화면에 반영하기 위함
+                this.reload()
+            }).catch(err => {
+                console.error(`err : ${err}`)
+            })
         },
-        getCheckStyle(id){
+        getCheckStyle(id) {
             const index = this.arr.findIndex((item) => item.id == id)
             return this.inputStyle[index]
         }
         ,
-        contentEdit(){
-
+        getDisabled(id) {
+            const index = this.arr.findIndex((item) => item.id == id)
+            return this.disabled[index]
         },
-        remove(){
+        contentEdit(id, content) {
 
+            const index = this.arr.findIndex((item) => item.id == id)
+            let flag = this.flagArr[index]
+            this.inputStyle[index].border = 'none'
+            this.disabled[index] = true
+
+            if (!flag) {
+                this.inputStyle[index].border = 'solid 0.5px black'
+                this.disabled[index] = false
+            } else {
+                fetch("http://localhost:3000/api/list/content/edit", {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "id": id,
+                        "content": content
+                    })
+                }).catch((err) => {
+                    console.error(`err : ${err}`)
+                })
+            }
+
+            flag ^= true
+            this.flagArr[index] = Boolean(flag)
+        },
+        remove(id) {
+            fetch("http://localhost:3000/api/list/delete", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "id": id
+                })
+            }).then((res) => {
+                return res.json()
+            }).then((data) => {
+                this.reload()
+            }).catch((err) => {
+                console.error(`err : ${err}`)
+            })
+        },
+        switchChange(){
+            localStorage.setItem("onoff", this.checked)
+            this.reload()
         }
     },
 
