@@ -8,14 +8,14 @@ export default {
             emptyPage: true,
             inputValue: ref(''),
             arr: ref([]),
-            inputStyle: ref([]),
+            // inputStyle: ref([]),
             checked: false
         }
     },
 
     methods: {
         reload() {
-            inputStyle = ref([])
+            // inputStyle = ref([])
             fetch('http://localhost:3000/api/list', {
                 method: "GET"
             }).then((data) => data.json()).then((res) => {
@@ -39,10 +39,22 @@ export default {
                             data.state = false
                         }
                     }).forEach(element => {
-                          
-                    });
-                    
 
+                        if(element.state == true){
+                            ref(this.inputStyle.append({
+                                textDecoration : "line-through",
+                                opacity : 0.4
+                            }))
+                        }else{
+                            ref(this.inputStyle.append({
+                                textDecoration : 'none',
+                                opacity : 1
+                            }))
+                        }
+
+                    });
+
+                    console.log(this.inputStyle)
 
                     // 스위치 on상태 일때 판단
                     if (localStorage.getItem('onoff') == 'true') {
@@ -88,13 +100,14 @@ export default {
             })
         },
         stateEdit(id, state) {
+
             stateMap = state == true ? 1 : 0
 
-            if (state == true) {
+            // if (state == true) {
 
-            } else {
+            // } else {
 
-            }
+            // }
             fetch('http://localhost:3000/api/list/state/edit', {
                 method: "PATCH",
                 headers: {
