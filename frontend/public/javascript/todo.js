@@ -8,14 +8,14 @@ export default {
             emptyPage: true,
             inputValue: ref(''),
             arr: ref([]),
-            // inputStyle: ref([]),
+            inputStyle: ref([]),
             checked: false
         }
     },
 
     methods: {
         reload() {
-            // inputStyle = ref([])
+            inputStyle = ref([])
             fetch('http://localhost:3000/api/list', {
                 method: "GET"
             }).then((data) => data.json()).then((res) => {
@@ -100,14 +100,13 @@ export default {
             })
         },
         stateEdit(id, state) {
-
             stateMap = state == true ? 1 : 0
 
-            // if (state == true) {
+            if (state == true) {
 
-            // } else {
+            } else {
 
-            // }
+            }
             fetch('http://localhost:3000/api/list/state/edit', {
                 method: "PATCH",
                 headers: {
