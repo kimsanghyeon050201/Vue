@@ -23,7 +23,7 @@
         <label for="switch"></label>
       </div>
     </ul>
-    <i class="empty" id="empty" v-if="emptyPage">Your todo list is empty</i>
+    <i class="empty" id="empty" v-else>Your todo list is empty</i>
     <div class="input">
       <p>Add to the todo list</p>
       <input type="text" id="txt" v-model="inputValue">

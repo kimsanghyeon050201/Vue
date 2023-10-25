@@ -5,7 +5,6 @@ export default {
     data() {
         return {
             listPage: false,
-            emptyPage: true,
             inputValue: ref(''),
             arr: [],
             checked: false,
@@ -30,11 +29,9 @@ export default {
 
                 if (len === 0) {
                     //리스트가 없으면 empty화면을 띄움
-                    this.emptyPage = true
                     this.listPage = false
                 } else {
                     //리스트가 있으면 list목록을 띄움
-                    this.emptyPage = false
                     this.listPage = true
 
                     //database에는 state가 int여서 bool로 바꾸는 과정
